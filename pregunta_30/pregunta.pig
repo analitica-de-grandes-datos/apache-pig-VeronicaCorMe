@@ -34,3 +34,13 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+u = LOAD './data.csv' USING PigStorage(',') AS (c1:int, firstname:chararray, lastname:chararray, fechas:chararray, color:chararray, c6:int);
+registros = FOREACH u GENERATE fechas, ToString(ToDate(fechas,'yyyy-MM-dd'), 'dd') AS D1, ToString(ToDate(fechas,'yyyy-MM-dd'), 'd') AS D2, ToString(ToDate(fechas,'yyyy-MM-dd'), 'EEEE') AS D4;
+dia_lunes = FOREACH registros GENERATE fechas, D1,D2,REPLACE(D4,'Monday', 'lun,lunes') AS D4;
+dia_martes = FOREACH dia_lunes GENERATE fechas, D1,D2,REPLACE(D4,'Tuesday', 'mar,martes')AS D4;
+dia_miercoles = FOREACH dia_martes GENERATE fechas, D1,D2,REPLACE(D4,'Wednesday', 'mie,miercoles')AS D4;
+dia_jueves = FOREACH dia_miercoles GENERATE fechas, D1,D2,REPLACE(D4,'Thursday', 'jue,jueves')AS D4;
+dia_viernes = FOREACH dia_jueves GENERATE fechas, D1,D2,REPLACE(D4,'Friday', 'vie,viernes')AS D4;
+dia_sabado = FOREACH dia_viernes  GENERATE fechas, D1,D2,REPLACE(D4,'Saturday', 'sab,sabado')AS D4;
+dia_domingo = FOREACH dia_sabado GENERATE fechas, D1,D2,REPLACE(D4,'Sunday', 'dom,domingo')AS D4;
+STORE dia_domingo INTO 'output' USING PigStorage(',');
